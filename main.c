@@ -1,12 +1,5 @@
-// needs to be changed in all header files
-#ifndef F_CPU
-#define F_CPU 16000000
-#endif
-
-// needs to be changed in all header files
-#ifndef __AVR_ATmega328P__
-#define __AVR_ATmega328P__
-#endif
+#include "config.h"
+#define CPU_CLOCK_FREQUENCY F_CPU
 
 #include <avr/io.h>
 #include <util/delay.h>

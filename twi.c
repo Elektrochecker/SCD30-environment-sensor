@@ -1,5 +1,4 @@
 #include "twi.h"
-#include <avr/io.h>
 
 void TWI_init() {
   // The Power Reduction TWI bit in the Power Reduction Register (PRRn.PRTWI) must be written to '0' to enable the two-wire Serial Interface.
@@ -20,6 +19,11 @@ void TWI_init() {
   TWBR = 100; // 1248 Hz
 }
 
+uint8_t TWI_status_code() {
+  // TWI status code register with the prescaler bits masked out
+  return TWSR & 0xf8;
+}
+
 void TWI_send_data(uint8_t data, uint8_t addr) {
   uint8_t SLA_W = (addr << 1) | 0x00;
 
@@ -33,10 +37,9 @@ void TWI_send_data(uint8_t data, uint8_t addr) {
     ;
 
   // Check value of TWI Status Register. Mask prescaler bits.
-  //  if((TWSR & 0xf8) != START) {
-  //      //error
-  //      return;
-  //  }
+  if (TWI_status_code() != TWI_STATUS_START) {
+    return;
+  }
 
   // Load SLA_W into TWDR Register. Clear
   // TWINT bit in TWCR to start transmission of
@@ -51,11 +54,10 @@ void TWI_send_data(uint8_t data, uint8_t addr) {
     ;
 
   // Check value of TWI Status Register. Mask
-  // prescaler bits. If status different from
-  // MT_SLA_ACK go to ERROR.
-  // if ((TWSR & 0xF8) != MT_SLA_ACK) {
-  // return;
-  // };
+  // prescaler bits. If status different from MT_SLA_ACK, return.
+  if (TWI_status_code() != TWI_STATUS_WRITE_SLA_ACK) {
+    return;
+  }
 
   // Load DATA into TWDR Register. Clear
   // TWINT bit in TWCR to start transmission of
@@ -70,11 +72,10 @@ void TWI_send_data(uint8_t data, uint8_t addr) {
     ;
 
   // Check value of TWI Status Register. Mask
-  // prescaler bits. If status different from
-  // MT_DATA_ACK go to ERROR.
-  // if ((TWSR0 & 0xF8) != MT_DATA_ACK) {
-  //   ERROR()
-  // };
+  // prescaler bits. If status different from MT_DATA_ACK go to ERROR.
+  if (TWI_status_code() != TWI_STATUS_WRITE_DATA_ACK) {
+    return;
+  }
 
   // Transmit STOP condition.
   TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);
