@@ -4,8 +4,9 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
-#include "uart.h"
 #include "twi.h"
+#include "uart.h"
+
 
 int main(void) {
 
@@ -17,7 +18,7 @@ int main(void) {
     _delay_ms(500);
 
     for (uint8_t i = 0; i < 100; i++) {
-      TWI_send_data(i, 0xd4);
+      TWI_send_byte(i, 0x61);
       _delay_ms(100);
     }
   }

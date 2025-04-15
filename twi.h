@@ -25,6 +25,7 @@
 
 extern void TWI_init();
 extern uint8_t TWI_status_code();
-extern void TWI_send_data(uint8_t data, uint8_t addr);
+extern void TWI_send_data(uint8_t *data, uint8_t len, uint8_t addr);
+extern void TWI_send_byte(uint8_t data, uint8_t addr);
 
 #endif
