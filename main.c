@@ -18,16 +18,16 @@ int main(void) {
   TWI_init();
   UART_init();
 
-  _delay_ms(500);
+  _delay_ms(100);
 
   SENSOR_init();
 
   while (1) {
     UART_send_string("\n\r\n\r");
-    UART_send_string("trying to read sensor data...\n\r");
+    UART_send_string("requesting sensor data...\n\r");
     SENSOR_read_data();
 
-    _delay_ms(500);
+    _delay_ms(2000);
   }
 
   return 0;

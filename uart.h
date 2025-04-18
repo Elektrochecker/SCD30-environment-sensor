@@ -5,7 +5,7 @@
 
 #include <avr/io.h>
 #include <stdlib.h>
-// #include <util/delay.h>
+#include <stdio.h>
 
 // UBRR = UART baud rate register
 // UBRR =  F_CPU / (baud rate * 16) - 1
@@ -16,13 +16,15 @@
 
 #define BAUD 9600L
 #define temp_UBRR (F_CPU / (BAUD * 16) - 1)
-// #define temp_UBRR 103
+#define UART_STRING_BUFFER_SIZE 12
 
 extern void UART_init();
 extern void UART_send_char(uint8_t data);
 extern void UART_send_string(char *s);
 extern void UART_println(char *s);
 extern void UART_send_number(int16_t n);
+extern void UART_send_number_hex(int16_t n);
+extern void UART_send_float(float f, uint8_t width, uint8_t precision);
 extern void UART_erase_line();
 
 #endif

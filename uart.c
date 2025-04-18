@@ -1,5 +1,7 @@
 #include "uart.h"
 
+char uart_string_buffer[UART_STRING_BUFFER_SIZE];
+
 void UART_init() {
   // UART baud rate
   UBRR0H = (uint8_t)(temp_UBRR >> 8); // baud rate upper byte
@@ -33,9 +35,19 @@ void UART_println(char *s) {
 }
 
 void UART_send_number(int16_t n) {
-  char str[8];
-  itoa(n, str, 10);
-  UART_send_string(str);
+  itoa(n, uart_string_buffer, 10);
+  UART_send_string(uart_string_buffer);
+}
+
+void UART_send_number_hex(int16_t n) {
+  itoa(n, uart_string_buffer, 16);
+  UART_send_string("0x");
+  UART_send_string(uart_string_buffer);
+}
+
+void UART_send_float(float f, uint8_t width, uint8_t precision) {
+  dtostrf(f, width, precision, uart_string_buffer);
+  UART_send_string(uart_string_buffer);
 }
 
 void UART_erase_line() {

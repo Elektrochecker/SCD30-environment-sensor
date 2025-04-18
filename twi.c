@@ -1,5 +1,5 @@
 #include "twi.h"
-#include "uart.h"
+
 uint8_t TWI_last_error;
 
 void TWI_init() {
@@ -34,36 +34,36 @@ void TWI_error(uint8_t code) {
 
   switch (code) {
   // handle different error situations
-  case 0x08:
+  case TWI_STATUS_START:
     UART_println("START condition has been transmitted");
     break;
-  case 0x10:
+  case TWI_STATUS_REPEATED_START:
     UART_println("repeated START condition has been transmitted");
-  case 0x18:
+  case TWI_STATUS_WRITE_SLA_ACK:
     UART_println("SLA+W has been transmitted, ACK received");
     break;
-  case 0x20:
+  case TWI_STATUS_WRITE_SLA_NOT_ACK:
     UART_println("SLA+W has been transmitted, NOT ACK received");
     break;
-  case 0x28:
+  case TWI_STATUS_WRITE_DATA_ACK:
     UART_println("data byte has been transmitted, ACK received");
     break;
-  case 0x30:
+  case TWI_STATUS_WRITE_DATA_NOT_ACK:
     UART_println("data byte has been transmitted, NOT ACK received");
     break;
-  case 0x38:
+  case TWI_STATUS_WRITE_FAILED:
     UART_println("arbitration lost / not ACK bit");
     break;
-  case 0x40:
+  case TWI_STATUS_READ_SLA_ACK:
     UART_println("SLA+R has been transmitted, ACK received");
     break;
-  case 0x48:
+  case TWI_STATUS_READ_SLA_NOT_ACK:
     UART_println("SLA+R has been transmitted, NOT ACK received");
     break;
-  case 0x50:
+  case TWI_STATUS_READ_RECEIVED_ACK:
     UART_println("data byte has been received, ACK returned");
     break;
-  case 0x58:
+  case TWI_STATUS_READ_RECEIVED_NOT_ACK:
     UART_println("data byte has been received, NOT ACK returned");
     break;
   case 0xf8:
