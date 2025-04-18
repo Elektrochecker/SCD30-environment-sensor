@@ -4,23 +4,30 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
+#include "sensor.h"
 #include "twi.h"
 #include "uart.h"
 
+// CURRENT CONNECTIVITY
+// PD4 -> TWI error LED
+// PC4 -> TWI SDA
+// PC5 -> TWI SCL
 
 int main(void) {
 
-  UART_init();
   TWI_init();
+  UART_init();
+
+  _delay_ms(500);
+
+  SENSOR_init();
 
   while (1) {
-    UART_send_string("sending i2c data..\n\r");
-    _delay_ms(500);
+    UART_send_string("\n\r\n\r");
+    UART_send_string("trying to read sensor data...\n\r");
+    SENSOR_read_data();
 
-    for (uint8_t i = 0; i < 100; i++) {
-      TWI_send_byte(i, 0x61);
-      _delay_ms(100);
-    }
+    _delay_ms(500);
   }
 
   return 0;
