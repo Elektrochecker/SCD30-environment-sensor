@@ -21,6 +21,7 @@
 extern void UART_init();
 extern void UART_send_char(uint8_t data);
 extern void UART_send_string(char *s);
+extern void UART_println(char *s);
 extern void UART_send_number(int16_t n);
 extern void UART_erase_line();
 
