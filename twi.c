@@ -2,6 +2,19 @@
 
 uint8_t TWI_last_error;
 
+const PROGMEM char TWI_errormsg_status_start[] = "START condition has been transmitted";
+const PROGMEM char TWI_errormsg_status_repeated_start[] = "repeated START condition has been transmitted";
+const PROGMEM char TWI_errormsg_status_write_sla_ack[] = "SLA+W has been transmitted, ACK received";
+const PROGMEM char TWI_errormsg_status_write_sla_not_ack[] = "SLA+W has been transmitted, NOT ACK received";
+const PROGMEM char TWI_errormsg_status_write_data_ack[] = "data byte has been transmitted, ACK received";
+const PROGMEM char TWI_errormsg_status_write_data_not_ack[] = "data byte has been transmitted, NOT ACK received";
+const PROGMEM char TWI_errormsg_status_write_failed[] = "arbitration lost / not ACK bit";
+const PROGMEM char TWI_errormsg_status_read_sla_ack[] = "SLA+R has been transmitted, ACK received";
+const PROGMEM char TWI_errormsg_status_read_sla_not_ack[] = "SLA+R has been transmitted, NOT ACK received";
+const PROGMEM char TWI_errormsg_status_read_received_ack[] = "data byte has been received, ACK returned";
+const PROGMEM char TWI_errormsg_status_read_received_not_ack[] = "data byte has been received, NOT ACK returned";
+const PROGMEM char TWI_errormsg_status_unknown[] = "no relevant information available";
+
 void TWI_init() {
   // set error LED to output
   DDRD |= (1 << LED_TWI_ERR);
@@ -35,39 +48,39 @@ void TWI_error(uint8_t code) {
   switch (code) {
   // handle different error situations
   case TWI_STATUS_START:
-    UART_println("START condition has been transmitted");
+    UART_println((char*) TWI_errormsg_status_start);
     break;
   case TWI_STATUS_REPEATED_START:
-    UART_println("repeated START condition has been transmitted");
+    UART_println((char*) TWI_errormsg_status_repeated_start);
   case TWI_STATUS_WRITE_SLA_ACK:
-    UART_println("SLA+W has been transmitted, ACK received");
+    UART_println((char*) TWI_errormsg_status_write_sla_ack);
     break;
   case TWI_STATUS_WRITE_SLA_NOT_ACK:
-    UART_println("SLA+W has been transmitted, NOT ACK received");
+    UART_println((char*) TWI_errormsg_status_write_sla_not_ack);
     break;
   case TWI_STATUS_WRITE_DATA_ACK:
-    UART_println("data byte has been transmitted, ACK received");
+    UART_println((char*) TWI_errormsg_status_write_data_ack);
     break;
   case TWI_STATUS_WRITE_DATA_NOT_ACK:
-    UART_println("data byte has been transmitted, NOT ACK received");
+    UART_println((char*) TWI_errormsg_status_write_data_not_ack);
     break;
   case TWI_STATUS_WRITE_FAILED:
-    UART_println("arbitration lost / not ACK bit");
+    UART_println((char*) TWI_errormsg_status_write_failed);
     break;
   case TWI_STATUS_READ_SLA_ACK:
-    UART_println("SLA+R has been transmitted, ACK received");
+    UART_println((char*) TWI_errormsg_status_read_sla_ack);
     break;
   case TWI_STATUS_READ_SLA_NOT_ACK:
-    UART_println("SLA+R has been transmitted, NOT ACK received");
+    UART_println((char*) TWI_errormsg_status_read_sla_not_ack);
     break;
   case TWI_STATUS_READ_RECEIVED_ACK:
-    UART_println("data byte has been received, ACK returned");
+    UART_println((char*) TWI_errormsg_status_read_received_ack);
     break;
   case TWI_STATUS_READ_RECEIVED_NOT_ACK:
-    UART_println("data byte has been received, NOT ACK returned");
+    UART_println((char*) TWI_errormsg_status_read_received_not_ack);
     break;
   case 0xf8:
-    UART_println("no relevant information available");
+    UART_println((char*) TWI_errormsg_status_unknown);
     break;
   }
 }

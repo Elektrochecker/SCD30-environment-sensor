@@ -3,13 +3,12 @@
 
 #include "config.h"
 #include "uart.h"
+
+#include <avr/pgmspace.h>
 #include <util/delay.h>
 
-// #include <stdlib.h>
-// #include <util/delay.h>
-
 // TWI error LED
-#define LED_TWI_ERR PD4
+#define LED_TWI_ERR PD6
 
 // TWI status codes
 #define TWI_STATUS_START 0x08          // START condition has been transmitted
