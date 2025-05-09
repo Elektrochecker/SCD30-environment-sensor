@@ -28,16 +28,33 @@ int main(void) {
 
   DDRD |= (1 << PD7);
 
+  // set date
+  DATETIME time = {
+    .seconds = 0,
+    .minutes = 4,
+    .hours = 15,
+    .weekday = 4,
+    .day = 9,
+    .month = 5,
+    .year = 2025
+  };
+
+  CLOCK_write_time(time);
+
   while (1) {
     UART_send_string("\n\r\n\r");
     UART_send_string("requesting sensor data...\n\r");
     SENSOR_read_data();
 
     DATETIME time = CLOCK_read_time();
-    char time_str[9];
+    char time_str[9] = {0};
+    char date_str[15] = {0};
     CLOCK_tostring(time, time_str, 9);
+    CLOCK_date_tostring(time, date_str, 15);
 
     UART_send_string(time_str);
+    UART_send_string("\n\r");
+    UART_send_string(date_str);
     UART_send_string("\n\r");
 
     _delay_ms(1000);
