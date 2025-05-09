@@ -1,6 +1,10 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+// ATmega fuses
+// lfuse = 0xef ; 16MHz low power external crystal oscillator, no clock divider
+// hfuse = 0xd9 ; ATmega default
+
 // mcu clock frequency [Hz]
 #define F_CPU 16000000
 

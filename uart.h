@@ -4,8 +4,8 @@
 #include "config.h"
 
 #include <avr/io.h>
+#include <avr/pgmspace.h>
 #include <stdlib.h>
-#include <stdio.h>
 
 // UBRR = UART baud rate register
 // UBRR =  F_CPU / (baud rate * 16) - 1
@@ -21,6 +21,7 @@
 extern void UART_init();
 extern void UART_send_char(uint8_t data);
 extern void UART_send_string(char *s);
+extern void UART_send_string_P(const char *s);
 extern void UART_println(char *s);
 extern void UART_send_number(int16_t n);
 extern void UART_send_number_hex(int16_t n);

@@ -31,6 +31,7 @@ extern uint8_t TWI_last_error;
 extern void TWI_init();
 extern uint8_t TWI_status_code();
 extern void TWI_send_data(uint8_t *data, uint8_t len, uint8_t addr);
+extern void TWI_send_data_P(const uint8_t *data, uint8_t len, uint8_t addr);
 extern void TWI_send_byte(uint8_t data_buffer, uint8_t addr);
 extern void TWI_read_data(uint8_t *receive_buffer, uint8_t len, uint8_t addr);
 

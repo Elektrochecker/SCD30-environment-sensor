@@ -48,39 +48,51 @@ void TWI_error(uint8_t code) {
   switch (code) {
   // handle different error situations
   case TWI_STATUS_START:
-    UART_println((char*) TWI_errormsg_status_start);
+    UART_send_string_P(TWI_errormsg_status_start);
+    UART_send_string("\n\r");
     break;
   case TWI_STATUS_REPEATED_START:
-    UART_println((char*) TWI_errormsg_status_repeated_start);
+    UART_send_string_P(TWI_errormsg_status_repeated_start);
+    UART_send_string("\n\r");
   case TWI_STATUS_WRITE_SLA_ACK:
-    UART_println((char*) TWI_errormsg_status_write_sla_ack);
+    UART_send_string_P(TWI_errormsg_status_write_sla_ack);
+    UART_send_string("\n\r");
     break;
   case TWI_STATUS_WRITE_SLA_NOT_ACK:
-    UART_println((char*) TWI_errormsg_status_write_sla_not_ack);
+    UART_send_string_P(TWI_errormsg_status_write_sla_not_ack);
+    UART_send_string("\n\r");
     break;
   case TWI_STATUS_WRITE_DATA_ACK:
-    UART_println((char*) TWI_errormsg_status_write_data_ack);
+    UART_send_string_P(TWI_errormsg_status_write_data_ack);
+    UART_send_string("\n\r");
     break;
   case TWI_STATUS_WRITE_DATA_NOT_ACK:
-    UART_println((char*) TWI_errormsg_status_write_data_not_ack);
+    UART_send_string_P(TWI_errormsg_status_write_data_not_ack);
+    UART_send_string("\n\r");
     break;
   case TWI_STATUS_WRITE_FAILED:
-    UART_println((char*) TWI_errormsg_status_write_failed);
+    UART_send_string_P(TWI_errormsg_status_write_failed);
+    UART_send_string("\n\r");
     break;
   case TWI_STATUS_READ_SLA_ACK:
-    UART_println((char*) TWI_errormsg_status_read_sla_ack);
+    UART_send_string_P(TWI_errormsg_status_read_sla_ack);
+    UART_send_string("\n\r");
     break;
   case TWI_STATUS_READ_SLA_NOT_ACK:
-    UART_println((char*) TWI_errormsg_status_read_sla_not_ack);
+    UART_send_string_P(TWI_errormsg_status_read_sla_not_ack);
+    UART_send_string("\n\r");
     break;
   case TWI_STATUS_READ_RECEIVED_ACK:
-    UART_println((char*) TWI_errormsg_status_read_received_ack);
+    UART_send_string_P(TWI_errormsg_status_read_received_ack);
+    UART_send_string("\n\r");
     break;
   case TWI_STATUS_READ_RECEIVED_NOT_ACK:
-    UART_println((char*) TWI_errormsg_status_read_received_not_ack);
+    UART_send_string_P(TWI_errormsg_status_read_received_not_ack);
+    UART_send_string("\n\r");
     break;
   case 0xf8:
-    UART_println((char*) TWI_errormsg_status_unknown);
+    UART_send_string_P(TWI_errormsg_status_unknown);
+    UART_send_string("\n\r");
     break;
   }
 }
@@ -148,6 +160,44 @@ void TWI_send_data(uint8_t *data_buffer, uint8_t len, uint8_t addr) {
     // TWINT bit in TWCR to start transmission of
     // data.
     TWDR = data_buffer[i];
+    TWCR = (1 << TWINT) | (1 << TWEN);
+
+    // Wait for TWINT Flag set. This indicates
+    // that the DATA has been transmitted, and
+    // ACK/NACK has been received.
+    while (!(TWCR & (1 << TWINT)))
+      ;
+
+    // Check value of TWI Status Register. Mask
+    // prescaler bits. If status different from MT_DATA_ACK go to ERROR.
+    if (TWI_status_code() != TWI_STATUS_WRITE_DATA_ACK) {
+      TWI_error(TWI_status_code());
+    } else {
+      TWI_success();
+    }
+  }
+
+  // Transmit STOP condition.
+  TWI_stop_condition();
+}
+
+// transmit an amount of data to a TWI slave without sending repeated start condition.
+// START -> SLA+W -> data .... data -> STOP
+// Using data from flash storage
+void TWI_send_data_P(const uint8_t *data_buffer_P, uint8_t len, uint8_t addr) {
+  // slave address + write bit
+
+  TWI_start_condition();
+  TWI_send_address(addr, 0);
+
+  // // fake clock stretching for SCD30
+  // _delay_ms(40);
+
+  for (uint8_t i = 0; i < len; i++) {
+    // Load DATA into TWDR Register. Clear
+    // TWINT bit in TWCR to start transmission of
+    // data.
+    TWDR = pgm_read_byte_near(data_buffer_P + i);
     TWCR = (1 << TWINT) | (1 << TWEN);
 
     // Wait for TWINT Flag set. This indicates

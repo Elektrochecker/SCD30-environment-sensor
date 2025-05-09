@@ -29,6 +29,13 @@ void UART_send_string(char *s) {
   }
 }
 
+void UART_send_string_P(const char *s) {
+  while (*s) {
+    UART_send_char(pgm_read_byte(s));
+    s++;
+  }
+}
+
 void UART_println(char *s) {
   UART_send_string(s);
   UART_send_string("\n\r");
