@@ -4,8 +4,15 @@ void CLOCK_init() {
   uint8_t buf[2] = {0};
 
   // set 24h format
-  buf[0] = 0x02; // write address
-  buf[1] = 0x00; // write data
+  // 24h format is the default, and overwriting the hours register deletes the hours every reset
+  // buf[0] = 0x02; // write address
+  // buf[1] = 0x00; // write data
+  // TWI_send_data(buf, 2, CLOCK_TWI_ADDR);
+
+  // configure trickle charger
+  // one diode, 250 ohm resistor
+  buf[0] = 0x10; // write address
+  buf[1] = 0xa9; // write data
   TWI_send_data(buf, 2, CLOCK_TWI_ADDR);
 }
 
@@ -92,28 +99,32 @@ void CLOCK_tostring(DATETIME time, char *result, uint8_t len) {
 }
 
 void CLOCK_date_tostring(DATETIME time, char *result, uint8_t len) {
-  // len should be at least 15
+  // len must be at least 15
+  // buffer for result must be at least of size len
   switch (time.weekday) {
-  case 0:
+  case 1:
     strncpy(result, "mon ", 5);
     break;
-  case 1:
+  case 2:
     strncpy(result, "tue ", 5);
     break;
-  case 2:
+  case 3:
     strncpy(result, "wed ", 5);
     break;
-  case 3:
+  case 4:
     strncpy(result, "thu ", 5);
     break;
-  case 4:
+  case 5:
     strncpy(result, "fri ", 5);
     break;
-  case 5:
+  case 6:
     strncpy(result, "sat ", 5);
     break;
-  case 6:
+  case 7:
     strncpy(result, "sun ", 5);
+    break;
+  default:
+    strncpy(result, "ERR ", 5);
     break;
   }
 

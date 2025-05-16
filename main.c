@@ -9,12 +9,16 @@
 #include "twi.h"
 #include "uart.h"
 
-// CURRENT CONNECTIVITY
+// IO CONNECTIVITY
 // PD6 -> TWI error LED (red)
 // PD7 -> program LED (blue)
 // PD2 .. PD5 user buttons (4)
 // PC4 -> TWI SDA
 // PC5 -> TWI SCL
+
+// uncomment to set the datetime when flashing.
+// must flash a second time with this option turned off again
+// #define DO_SET_DATETIME
 
 int main(void) {
 
@@ -28,18 +32,11 @@ int main(void) {
 
   DDRD |= (1 << PD7);
 
-  // set date
-  DATETIME time = {
-    .seconds = 0,
-    .minutes = 4,
-    .hours = 15,
-    .weekday = 4,
-    .day = 9,
-    .month = 5,
-    .year = 2025
-  };
-
+  // set date & time
+#ifdef DO_SET_DATETIME
+  DATETIME time = {.seconds = 0, .minutes = 7, .hours = 13, .weekday = 6, .day = 10, .month = 5, .year = 2025};
   CLOCK_write_time(time);
+#endif
 
   while (1) {
     UART_send_string("\n\r\n\r");
