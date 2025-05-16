@@ -5,6 +5,8 @@ const PROGMEM uint8_t softreset[2] = {0xd3, 0x04};
 const PROGMEM uint8_t read_data_avail[2] = {0x02, 0x02};
 const PROGMEM uint8_t read_measurement[2] = {0x03, 0x00};
 
+SENSOR_reading SENSOR_last_reading;
+
 void SENSOR_init() {
   DDRB |= (0 << SENSOR_RDY_PIN);
 
@@ -33,10 +35,13 @@ float SENSOR_data_to_float(uint8_t *buffer, uint8_t buffer_size, uint8_t offset)
 
 uint8_t SENSOR_data_ready() { return PINB & (1 << SENSOR_RDY_PIN); }
 
-void SENSOR_read_data() {
+SENSOR_reading SENSOR_read_data() {
+  SENSOR_reading reading;
+
   if (!SENSOR_data_ready()) {
     UART_println("sensor not ready, skipping reading data");
-    return;
+    reading.success = 0;
+    return reading;
   }
 
   uint8_t result[18];
@@ -46,24 +51,10 @@ void SENSOR_read_data() {
 
   TWI_read_data(result, 18, SENSOR_TWI_ADDR);
 
-  // for (uint8_t i = 0; i < 18; i++) {
-  //   UART_send_number_hex(result[i]);
-  //   UART_send_string("\n\r");
-  // }
+  reading.co2concentration = SENSOR_data_to_float(result, 18, 0);
+  reading.temperature = SENSOR_data_to_float(result, 18, 6);
+  reading.humidity = SENSOR_data_to_float(result, 18, 12);
+  reading.success = 1;
 
-  float co2concentration = SENSOR_data_to_float(result, 18, 0);
-  float temperature = SENSOR_data_to_float(result, 18, 6);
-  float humidity = SENSOR_data_to_float(result, 18, 12);
-
-  UART_send_string("co2 concentration ");
-  UART_send_float(co2concentration, 4, 0);
-  UART_send_string(" ppm\n\r");
-
-  UART_send_string("temperature       ");
-  UART_send_float(temperature, 4, 1);
-  UART_send_string(" C\n\r");
-
-  UART_send_string("humidity          ");
-  UART_send_float(humidity, 4, 0);
-  UART_send_string(" %\n\r");
+  return reading;
 }
