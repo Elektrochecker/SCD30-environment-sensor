@@ -54,4 +54,12 @@ extern void DISPLAY_clear_frame_buffer();
 extern void DISPLAY_show_frame();
 extern void DISPLAY_clear();
 
+extern void DISPLAY_hline(uint16_t x, uint16_t y, uint16_t w);
+extern void DISPLAY_vline(uint16_t x, uint16_t y, uint16_t h);
+extern void DISPLAY_rect_filled(uint16_t x, uint16_t y, uint16_t w, uint16_t h);
+extern void DISPLAY_rect_hollow(uint16_t x, uint16_t y, uint16_t w, uint16_t h);
+extern void DISPLAY_rect_dashed_intensity(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint8_t intensity);
+extern void DISPLAY_rect_dashed_intensity_angle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint8_t intensity, int16_t angle);
+extern void DISPLAY_rect_dashed_0(uint16_t x, uint16_t y, uint16_t w, uint16_t h);
+
 #endif

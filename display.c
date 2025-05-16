@@ -116,3 +116,81 @@ void DISPLAY_clear() {
     }
   }
 }
+
+// lines and rectangles
+void DISPLAY_hline(uint16_t x, uint16_t y, uint16_t w) {
+  for (uint8_t ix = x; ix < w + x; ix++) {
+    DISPLAY_frame_buffer_set(ix, y, 1);
+  }
+}
+
+void DISPLAY_vline(uint16_t x, uint16_t y, uint16_t h) {
+  for (uint8_t iy = y; iy < h + y; iy++) {
+    DISPLAY_frame_buffer_set(x, iy, 1);
+  }
+}
+
+void DISPLAY_rect_filled(uint16_t x, uint16_t y, uint16_t w, uint16_t h) {
+  for (uint8_t iy = y; iy < h + y; iy++) {
+    for (uint8_t ix = x; ix < w + x; ix++) {
+      DISPLAY_frame_buffer_set(ix, iy, 1);
+    }
+  }
+}
+
+void DISPLAY_rect_hollow(uint16_t x, uint16_t y, uint16_t w, uint16_t h) {
+  for (uint8_t iy = y; iy < h + y; iy++) {
+    for (uint8_t ix = x; ix < w + x; ix++) {
+      if (ix == x || ix == x + w - 1 || iy == y || iy == y + h - 1) {
+        DISPLAY_frame_buffer_set(ix, iy, 1);
+      } else {
+        DISPLAY_frame_buffer_set(ix, iy, 0);
+      }
+    }
+  }
+}
+
+void DISPLAY_rect_dashed_intensity(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint8_t intensity) {
+  // best values for intensity are 2, 3, 4
+  for (uint8_t iy = y; iy < h + y; iy++) {
+    for (uint8_t ix = x; ix < w + x; ix++) {
+      if (ix == x || ix == x + w - 1 || iy == y || iy == y + h - 1) {
+        DISPLAY_frame_buffer_set(ix, iy, 1);
+      } else {
+        DISPLAY_frame_buffer_set(ix, iy, (ix - iy) % intensity == 0);
+      }
+    }
+  }
+}
+
+void DISPLAY_rect_dashed_intensity_angle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint8_t intensity, int16_t angle) {
+  // best values for intensity are 2, 3, 4
+  // angle 1 normal, angle -1 flipped direction
+  // angles with absolute values greater than 1 have interesting dotted effects
+  for (uint8_t iy = y; iy < h + y; iy++) {
+    for (uint8_t ix = x; ix < w + x; ix++) {
+      if (ix == x || ix == x + w - 1 || iy == y || iy == y + h - 1) {
+        DISPLAY_frame_buffer_set(ix, iy, 1);
+      } else {
+        DISPLAY_frame_buffer_set(ix, iy, (ix + angle * iy) % intensity == 0);
+      }
+    }
+  }
+}
+
+void DISPLAY_rect_dashed_noborder(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint8_t intensity, int16_t angle) {
+  // best values for intensity are 2, 3, 4
+  // angle 1 normal, angle -1 flipped direction
+  // angles with absolute values greater than 1 have interesting dotted effects
+  for (uint8_t iy = y; iy < h + y; iy++) {
+    for (uint8_t ix = x; ix < w + x; ix++) {
+      if (ix == x || ix == x + w - 1 || iy == y || iy == y + h - 1) {
+        // no border
+      } else {
+        DISPLAY_frame_buffer_set(ix, iy, (ix + angle * iy) % intensity == 0);
+      }
+    }
+  }
+}
+
+void DISPLAY_rect_dashed_0(uint16_t x, uint16_t y, uint16_t w, uint16_t h) { DISPLAY_rect_dashed_intensity(x, y, w, h, 2); }
