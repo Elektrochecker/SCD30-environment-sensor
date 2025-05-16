@@ -3,6 +3,8 @@
 
 #include "config.h"
 #include "spi.h"
+#include "display_font.h"
+#include <string.h>
 
 #define DISPLAY_CS_PIN PB1
 #define DISPLAY_RESET_PIN PC0
@@ -61,5 +63,7 @@ extern void DISPLAY_rect_hollow(uint16_t x, uint16_t y, uint16_t w, uint16_t h);
 extern void DISPLAY_rect_dashed_intensity(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint8_t intensity);
 extern void DISPLAY_rect_dashed_intensity_angle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint8_t intensity, int16_t angle);
 extern void DISPLAY_rect_dashed_0(uint16_t x, uint16_t y, uint16_t w, uint16_t h);
+
+void DISPLAY_write(char* str);
 
 #endif

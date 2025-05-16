@@ -194,3 +194,18 @@ void DISPLAY_rect_dashed_noborder(uint16_t x, uint16_t y, uint16_t w, uint16_t h
 }
 
 void DISPLAY_rect_dashed_0(uint16_t x, uint16_t y, uint16_t w, uint16_t h) { DISPLAY_rect_dashed_intensity(x, y, w, h, 2); }
+
+// drawing text
+void DISPLAY_write(char *str) {
+  for (uint32_t j = 0; j < strlen(str); j++) {
+    for (uint8_t i = 0; i < 7; i++) {
+      uint8_t b = pgm_read_byte(font_standard[str[j] - 0x20] + i);
+      if (b == 0xaa) {
+        DISPLAY_data_byte(0x00);
+        break;
+      } else {
+        DISPLAY_data_byte(b);
+      }
+    }
+  }
+}
