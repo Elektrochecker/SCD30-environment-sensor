@@ -5,16 +5,27 @@
 #include <util/delay.h>
 
 #include "clock.h"
+#include "display.h"
 #include "sensor.h"
+#include "spi.h"
 #include "twi.h"
 #include "uart.h"
 
 // IO CONNECTIVITY
-// PD6 -> TWI error LED (red)
-// PD7 -> program LED (blue)
-// PD2 .. PD5 user buttons (4)
+
+// PB0 -> sensor RDY
+// PB1 -> CS display
+// PB2 -> CS flash chip
+// PB3 -> MOSI
+// PB4 -> MISO
+// PB5 -> CLK
+// PC0 -> display reset
+// PC1 -> display A0
 // PC4 -> TWI SDA
 // PC5 -> TWI SCL
+// PD2 .. PD5 user buttons (4)
+// PD6 -> TWI error LED (red)
+// PD7 -> program LED (blue)
 
 // uncomment to set the datetime when flashing.
 // must flash a second time with this option turned off again
@@ -22,6 +33,7 @@
 
 int main(void) {
 
+  SPI_init();
   TWI_init();
   UART_init();
 
@@ -29,6 +41,7 @@ int main(void) {
 
   SENSOR_init();
   CLOCK_init();
+  DISPLAY_init();
 
   DDRD |= (1 << PD7);
 
@@ -39,6 +52,10 @@ int main(void) {
 #endif
 
   while (1) {
+
+    DISPLAY_frame_buffer_set(16, 16, 1);
+    DISPLAY_show_frame();
+
     UART_send_string("\n\r\n\r");
     UART_send_string("requesting sensor data...\n\r");
     SENSOR_read_data();

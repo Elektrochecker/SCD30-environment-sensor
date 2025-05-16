@@ -9,7 +9,7 @@ PART=atmega328p
 echo $PART | toilet --metal
 
 FNAME=$1
-INCLUDES="uart.h uart.c twi.h twi.c sensor.h sensor.c clock.h clock.c"
+INCLUDES="uart.h uart.c twi.h twi.c sensor.h sensor.c clock.h clock.c spi.h spi.c display.h display.c"
 
 find $FNAME > /dev/null || exit
 find build/ > /dev/null || mkdir build
