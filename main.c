@@ -70,30 +70,26 @@ int main(void) {
     CLOCK_tostring(time, time_str, 9);
     CLOCK_date_tostring(time, date_str, 15);
 
-    DISPLAY_set_pos(0, 0);
-    DISPLAY_write(date_str);
-    DISPLAY_set_pos(0, 88);
-    DISPLAY_write(time_str);
+    DISPLAY_write_to_framebuffer(date_str, 0, 0);
+    DISPLAY_write_to_framebuffer(time_str, 0, 88);
 
-    char sensor_str[6];
+    char sensor_str[6] = {0};
     dtostrf(SENSOR_last_reading.temperature, 4, 1, sensor_str);
-    DISPLAY_set_pos(3, 0);
-    DISPLAY_write("temperature: ");
-    DISPLAY_write(sensor_str);
-    DISPLAY_write(" C");
+    DISPLAY_write_to_framebuffer("temperature: ", 3, 0);
+    DISPLAY_write_to_framebuffer(sensor_str, 3, 64);
+    DISPLAY_write_to_framebuffer(" C", 3, 88);
 
     dtostrf(SENSOR_last_reading.humidity, 4, 1, sensor_str);
-    DISPLAY_set_pos(5, 0);
-    DISPLAY_write("humidity:      ");
-    DISPLAY_write(sensor_str);
-    DISPLAY_write(" %");
+    DISPLAY_write_to_framebuffer("humidity:      ", 5, 0);
+    DISPLAY_write_to_framebuffer(sensor_str, 5, 64);
+    DISPLAY_write_to_framebuffer(" %", 5, 88);
 
     dtostrf(SENSOR_last_reading.co2concentration, 4, 0, sensor_str);
-    DISPLAY_set_pos(7, 0);
-    DISPLAY_write("co2:           ");
-    DISPLAY_write(sensor_str);
-    DISPLAY_write(" ppm");
+    DISPLAY_write_to_framebuffer("co2:           ", 7, 0);
+    DISPLAY_write_to_framebuffer(sensor_str, 7, 64);
+    DISPLAY_write_to_framebuffer(" ppm", 7, 88);
 
+    DISPLAY_show_frame();
     _delay_ms(200);
   }
 

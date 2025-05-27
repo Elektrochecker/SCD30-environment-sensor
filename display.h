@@ -64,6 +64,7 @@ extern void DISPLAY_rect_dashed_intensity(uint16_t x, uint16_t y, uint16_t w, ui
 extern void DISPLAY_rect_dashed_intensity_angle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint8_t intensity, int16_t angle);
 extern void DISPLAY_rect_dashed_0(uint16_t x, uint16_t y, uint16_t w, uint16_t h);
 
-void DISPLAY_write(char* str);
+extern void DISPLAY_write(char* str);
+extern void DISPLAY_write_to_framebuffer(char *str, uint8_t y, uint8_t x);
 
 #endif

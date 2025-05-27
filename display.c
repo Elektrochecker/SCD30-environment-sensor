@@ -1,6 +1,6 @@
 #include "display.h"
 
-uint8_t frameBuffer[DISPLAY_ROW_SIZE][DISPLAY_NUMBER_OF_ROWS] = {0};
+uint8_t DISPLAY_framebuffer[DISPLAY_ROW_SIZE * DISPLAY_NUMBER_OF_ROWS] = {0};
 
 void DISPLAY_byte(uint8_t A0, uint8_t byte) {
   // enable chipselect
@@ -79,22 +79,22 @@ void DISPLAY_frame_buffer_set(uint8_t x, uint8_t y, uint8_t state) {
   uint8_t b = 0x01 << (y % 8);
 
   if (state) {
-    frameBuffer[x][(int)(y / 8)] |= b;
+    DISPLAY_framebuffer[x + DISPLAY_ROW_SIZE * (y / 8)] |= b;
   } else {
-    frameBuffer[x][(int)(y / 8)] &= ~b;
+    DISPLAY_framebuffer[x + DISPLAY_ROW_SIZE * (y / 8)] &= ~b;
   }
 }
 
 // change the Value of a pixel with coordinates (x, y)
 void DISPLAY_frame_buffer_switch(uint8_t x, uint8_t y) {
   uint8_t b = 0x01 << (y % 8);
-  frameBuffer[x][(int)(y / 8)] ^= b;
+  DISPLAY_framebuffer[x + DISPLAY_ROW_SIZE * (y / 8)] ^= b;
 }
 
 void DISPLAY_clear_frame_buffer() {
   for (int j = 0; j < DISPLAY_NUMBER_OF_ROWS; j++) {
     for (int i = 0; i < DISPLAY_ROW_SIZE; i++) {
-      frameBuffer[i][j] = 0x00;
+      DISPLAY_framebuffer[i + DISPLAY_ROW_SIZE * j] = 0x00;
     }
   }
 }
@@ -103,7 +103,7 @@ void DISPLAY_show_frame() {
   for (int j = 0; j < DISPLAY_NUMBER_OF_ROWS; j++) {
     DISPLAY_set_pos(j, 0);
     for (int i = 0; i < DISPLAY_ROW_SIZE; i++) {
-      DISPLAY_data_byte(frameBuffer[i][j]);
+      DISPLAY_data_byte(DISPLAY_framebuffer[i + DISPLAY_ROW_SIZE * j]);
     }
   }
 }
@@ -205,6 +205,27 @@ void DISPLAY_write(char *str) {
         break;
       } else {
         DISPLAY_data_byte(b);
+      }
+    }
+  }
+}
+
+void DISPLAY_write_to_framebuffer(char *str, uint8_t y, uint8_t x) {
+  if (x + DISPLAY_ROW_SIZE * y + 7 * strlen(str) >= DISPLAY_NUMBER_OF_ROWS * DISPLAY_ROW_SIZE) {
+    return;
+  }
+
+  uint16_t offset = 0;
+
+  for (uint32_t j = 0; j < strlen(str); j++) {
+    for (uint8_t i = 0; i < 7; i++) {
+      uint8_t b = pgm_read_byte(font_standard[str[j] - 0x20] + i);
+      if (b == 0xaa || i == 7) {
+        DISPLAY_framebuffer[x + DISPLAY_ROW_SIZE * y + i + offset++] = 0x00;
+        offset += i;
+        break;
+      } else {
+        DISPLAY_framebuffer[x + DISPLAY_ROW_SIZE * y + i + offset] = b;
       }
     }
   }
