@@ -19,6 +19,13 @@ typedef struct {
   uint8_t success;
 } SENSOR_reading;
 
+typedef struct {
+  float temperature;
+  float humidity;
+  float co2concentration;
+  uint32_t timestamp;
+} SENSOR_datapoint;
+
 extern SENSOR_reading SENSOR_last_reading;
 
 extern void SENSOR_init();

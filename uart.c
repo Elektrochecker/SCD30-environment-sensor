@@ -46,8 +46,8 @@ void UART_send_number(int16_t n) {
   UART_send_string(uart_string_buffer);
 }
 
-void UART_send_number_hex(int16_t n) {
-  itoa(n, uart_string_buffer, 16);
+void UART_send_number_hex(uint16_t n) {
+  utoa(n, uart_string_buffer, 16);
   UART_send_string("0x");
   UART_send_string(uart_string_buffer);
 }

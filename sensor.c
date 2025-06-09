@@ -39,7 +39,7 @@ SENSOR_reading SENSOR_read_data() {
   SENSOR_reading reading;
 
   if (!SENSOR_data_ready()) {
-    UART_println("sensor not ready, skipping reading data");
+    // UART_println("sensor not ready, skipping reading data");
     reading.success = 0;
     return reading;
   }

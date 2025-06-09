@@ -24,7 +24,7 @@ extern void UART_send_string(char *s);
 extern void UART_send_string_P(const char *s);
 extern void UART_println(char *s);
 extern void UART_send_number(int16_t n);
-extern void UART_send_number_hex(int16_t n);
+extern void UART_send_number_hex(uint16_t n);
 extern void UART_send_float(float f, uint8_t width, uint8_t precision);
 extern void UART_erase_line();
 
