@@ -130,3 +130,27 @@ void CLOCK_date_tostring(DATETIME time, char *result, uint8_t len) {
 
   snprintf(result + 4, len - 4, "%d.%d.%d", time.day, time.month, time.year);
 }
+
+DATETIME_reduced CLOCK_datetime_to_reduced(DATETIME time) {
+  // 6 bits minutes, 5b hours, 5b days, 4b month, 7b year, 5b spare
+  // loses precision in seconds
+  DATETIME_reduced result;
+
+  result.data = (time.minutes & 0x3f) | ((time.hours & 0x1f) << 6) | ((time.day & 0x1f) << 11) | (((uint32_t)time.month & 0x0f) << 16) |
+                (((uint32_t)(time.year - 2000) & 0x7f) << 20);
+
+  return result;
+}
+
+DATETIME CLOCK_datetime_from_reduced(DATETIME_reduced time) {
+  DATETIME result = {
+      .seconds = 0,
+      .minutes = time.data & 0x3f,
+      .hours = (time.data >> 6) & 0x1f,
+      .day = (time.data >> 11) & 0x1f,
+      .month = (time.data >> 16) & 0x0f,
+      .year = ((time.data >> 20) & 0x7f) + 2000,
+  };
+
+  return result;
+}

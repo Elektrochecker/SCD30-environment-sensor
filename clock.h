@@ -20,10 +20,16 @@ typedef struct {
   uint16_t year;
 } DATETIME;
 
+typedef struct {
+  uint32_t data;
+} DATETIME_reduced;
+
 extern void CLOCK_init();
 extern DATETIME CLOCK_read_time();
 extern void CLOCK_write_time(DATETIME time);
 extern void CLOCK_tostring(DATETIME time, char *result, uint8_t len);
 extern void CLOCK_date_tostring(DATETIME time, char *result, uint8_t len);
+extern DATETIME_reduced CLOCK_datetime_to_reduced(DATETIME time);
+extern DATETIME CLOCK_datetime_from_reduced(DATETIME_reduced time);
 
 #endif

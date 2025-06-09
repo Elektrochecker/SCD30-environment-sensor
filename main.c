@@ -56,9 +56,21 @@ int main(void) {
 
   // set date & time
 #ifdef DO_SET_DATETIME
-  DATETIME time = {.seconds = 0, .minutes = 7, .hours = 13, .weekday = 6, .day = 10, .month = 5, .year = 2025};
+  DATETIME time = {.seconds = 0, .minutes = 32, .hours = 12, .weekday = 1, .day = 9, .month = 6, .year = 2025};
   CLOCK_write_time(time);
 #endif
+
+  DATETIME_reduced time_r = CLOCK_datetime_to_reduced(CLOCK_read_time());
+  DATETIME time = CLOCK_datetime_from_reduced(time_r);
+  UART_send_number_hex(time_r.data & 0xff);
+  UART_send_number_hex((time_r.data >> 16) & 0xff);
+  char str[15];
+  CLOCK_tostring(time, str, 9);
+  UART_send_string("\r\n");
+  UART_send_string(str);
+  CLOCK_date_tostring(time, str, 15);
+  UART_send_string("\r\n");
+  UART_send_string(str);
 
   while (1) {
     SENSOR_reading reading = SENSOR_read_data();

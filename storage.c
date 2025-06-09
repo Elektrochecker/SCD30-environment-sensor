@@ -63,7 +63,7 @@ uint16_t STORAGE_read_device_id() {
   SPI_transmit(0x00);
   SPI_transmit(0x00);
   SPI_transmit(0x00);
-  result |= SPI_receive() << 8;
+  result = SPI_receive() << 8;
   result |= SPI_receive();
   PORTB |= (1 << STORAGE_CS_PIN);
 
