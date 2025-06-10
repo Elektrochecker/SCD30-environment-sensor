@@ -79,7 +79,7 @@ int main(void) {
       SENSOR_last_reading = reading;
 
       if (data_save_counter >= DATA_SAVE_LOOP_COUNT) {
-        STORAGE_save_datapoint(reading, CLOCK_read_time());
+        STORAGE_save_datapoint(SENSOR_last_reading, CLOCK_read_time());
 
         data_save_counter = 0;
       }

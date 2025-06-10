@@ -16,7 +16,7 @@
 
 #define BAUD 9600L
 #define temp_UBRR (F_CPU / (BAUD * 16) - 1)
-#define UART_STRING_BUFFER_SIZE 90
+#define UART_STRING_BUFFER_SIZE 12
 
 extern void UART_init();
 extern void UART_send_char(uint8_t data);
