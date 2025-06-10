@@ -4,6 +4,7 @@
 #include "config.h"
 #include "twi.h"
 #include "uart.h"
+#include "clock.h"
 
 #include <avr/io.h>
 #include <avr/pgmspace.h>
@@ -23,7 +24,7 @@ typedef struct {
   float temperature;
   float humidity;
   float co2concentration;
-  uint32_t timestamp;
+  DATETIME_reduced timestamp;
 } SENSOR_datapoint;
 
 extern SENSOR_reading SENSOR_last_reading;

@@ -26,12 +26,17 @@
 // PC4 -> TWI SDA
 // PC5 -> TWI SCL
 // PD2 .. PD5 -> user buttons (4)
-// PD6 -> TWI error LED (red)
+// PD6 -> TWI error / Flash storage write LED (red)
 // PD7 -> program LED (blue)
 
 // uncomment to set the datetime when flashing.
 // must flash a second time with this option turned off again
 // #define DO_SET_DATETIME
+
+#define MAIN_LOOP_DELAY 200U
+#define DATA_SAVE_INTERVAL 60U // seconds
+#define DATA_SAVE_LOOP_COUNT DATA_SAVE_INTERVAL * 1000U / MAIN_LOOP_DELAY
+uint16_t data_save_counter = 0;
 
 int main(void) {
 
@@ -52,7 +57,15 @@ int main(void) {
 
   _delay_ms(500);
 
-  STORAGE_print_debug_information();
+  // STORAGE_print_debug_information();
+
+  // STORAGE_block_erase_32k(0);
+
+  // scan the flash chip for the last written datapoint
+  STORAGE_current_location = STORAGE_scan_location();
+
+  // dump current database on startup
+  STORAGE_dump_datapoints_to_uart();
 
   // set date & time
 #ifdef DO_SET_DATETIME
@@ -60,28 +73,23 @@ int main(void) {
   CLOCK_write_time(time);
 #endif
 
-  DATETIME_reduced time_r = CLOCK_datetime_to_reduced(CLOCK_read_time());
-  DATETIME time = CLOCK_datetime_from_reduced(time_r);
-  UART_send_number_hex(time_r.data & 0xff);
-  UART_send_number_hex((time_r.data >> 16) & 0xff);
-  char str[15];
-  CLOCK_tostring(time, str, 9);
-  UART_send_string("\r\n");
-  UART_send_string(str);
-  CLOCK_date_tostring(time, str, 15);
-  UART_send_string("\r\n");
-  UART_send_string(str);
-
   while (1) {
     SENSOR_reading reading = SENSOR_read_data();
     if (reading.success) {
       SENSOR_last_reading = reading;
+
+      if (data_save_counter >= DATA_SAVE_LOOP_COUNT) {
+        STORAGE_save_datapoint(reading, CLOCK_read_time());
+
+        data_save_counter = 0;
+      }
     }
 
     SCENE_display_current_scene();
     SCNENE_advance();
 
-    _delay_ms(200);
+    _delay_ms(MAIN_LOOP_DELAY);
+    data_save_counter++;
   }
 
   return 0;
