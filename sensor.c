@@ -11,11 +11,9 @@ void SENSOR_init() {
   DDRB |= (0 << SENSOR_RDY_PIN);
 
   // soft reset the MCU of the sensor module
-  UART_send_string("TWI: soft reset\n\r");
   TWI_send_data_P(softreset, 2, SENSOR_TWI_ADDR);
-  // activate periodic measurements
 
-  UART_send_string("TWI: trigger continuous measurement\n\r");
+  // activate periodic measurements
   TWI_send_data_P(trigger_continuous_measurement, 5, SENSOR_TWI_ADDR);
 }
 

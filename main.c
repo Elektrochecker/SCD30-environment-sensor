@@ -53,7 +53,7 @@ int main(void) {
   STORAGE_init();
 
   DDRD |= (1 << PD7);
-  PORTD |= (1 << PD7);
+  // PORTD |= (1 << PD7);
 
   _delay_ms(500);
 
@@ -62,10 +62,21 @@ int main(void) {
   // STORAGE_block_erase_32k(0);
 
   // scan the flash chip for the last written datapoint
+  DISPLAY_set_pos(0, 0);
+  DISPLAY_write("Scanning storage...");
   STORAGE_current_location = STORAGE_scan_location();
 
   // dump current database on startup
+  DISPLAY_set_pos(1, 0);
+  DISPLAY_write("Dumping data...");
   STORAGE_dump_datapoints_to_uart();
+
+  // UART_send_string("\r\nstorage location ");
+  // UART_send_number_hex_32(STORAGE_current_location);
+  //
+  // STORAGE_print_page_data(STORAGE_current_location*16-256);
+  // STORAGE_print_page_data(STORAGE_current_location*16);
+  // STORAGE_print_page_data(STORAGE_current_location*16+256);
 
   // set date & time
 #ifdef DO_SET_DATETIME

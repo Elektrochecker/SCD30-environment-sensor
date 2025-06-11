@@ -276,12 +276,24 @@ uint32_t STORAGE_scan_location() {
   // find the page with end of data
   for (uint32_t i = 1; i <= STORAGE_MAX_ADDR / sizeof(SENSOR_datapoint); i += 16) {
     uint32_t addr = i * sizeof(SENSOR_datapoint) - 1;
-    uint8_t reading = 0;
-    STORAGE_read_data(addr, &reading, 1);
+    uint8_t readings[16] = {0};
+
+    for (uint8_t j = 0; j < 16; j++) {
+      STORAGE_read_data(addr + 16 * j, readings + j, 1);
+    }
+
 
     // the last byte of a SENSOR_datapoint is always zero.
-    // the first reading with a 1 is therefore the end of written data
-    if (reading & 0x80) {
+    // the first page with a 1 at every end of datapoint is therefore the end of written data
+    uint8_t page_empty = 1;
+    for (uint8_t j = 0; j < 16; j++) {
+      if (!(readings[j] & 0x80)) {
+        page_empty = 0;
+        break;
+      }
+    }
+
+    if (page_empty) {
       current = i;
       break;
     }
