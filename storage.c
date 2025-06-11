@@ -201,15 +201,24 @@ uint8_t STORAGE_read_status_3() {
   return result;
 }
 
-void STORAGE_print_page_data(uint32_t adddr) {
+void STORAGE_print_page_data(uint32_t addr) {
+  uint32_t page = addr / 256;
+  uint32_t aligned_addr = page * 256;
+
+  UART_send_string("\r\nflash storage, page ");
+  UART_send_number_hex_32(page);
+  UART_send_string(" at address ");
+  UART_send_number_hex_32(aligned_addr);
   UART_send_string("\r\n");
 
-  uint16_t flash_read_sample;
+  uint32_t flash_read_sample = 0;
 
-  for (uint32_t i = 0; i < 128; i++) {
-    STORAGE_read_data(i * 2, (uint8_t *)&flash_read_sample, 2);
-    UART_send_number_hex(flash_read_sample);
-    UART_send_string(" ");
+  for (uint32_t i = 0; i < 256 / (sizeof flash_read_sample); i++) {
+    STORAGE_read_data(aligned_addr + i * 4, (uint8_t *)&flash_read_sample, 4);
+    UART_send_number_hex_32(aligned_addr + i * 4);
+    UART_send_string(": ");
+    UART_send_number_hex_32(flash_read_sample);
+    UART_send_string("\r\n");
   }
 
   UART_send_string("\r\n");
@@ -309,12 +318,22 @@ uint32_t STORAGE_scan_location() {
 }
 
 // print the entire flash database in CSV-like format
-const PROGMEM char STORAGE_csv_header[] = "\r\nmin\t;hour\t;day\t;month\t;year\t;temperature[C]\t;humidity[%]\t;co2concentration[ppm]\r\n";
+const PROGMEM char STORAGE_data_header[] = "\r\nEnvironmental sensor data dump ";
+const PROGMEM char STORAGE_csv_header[] = "\r\nmin\t;hour\t;day\t;month\t;year\t;T[°C]\t;hum[%]\t;co2[ppm]\r\n";
 void STORAGE_dump_datapoints_to_uart() {
   if (STORAGE_current_location > STORAGE_MAX_ADDR / sizeof(SENSOR_datapoint)) {
     return;
   }
 
+  DATETIME time = CLOCK_read_time();
+  char time_str[15];
+
+  UART_send_string_P(STORAGE_data_header);
+  CLOCK_date_tostring(time, time_str, 15);
+  UART_send_string(time_str);
+  UART_send_char(' ');
+  CLOCK_tostring(time, time_str, 9);
+  UART_send_string(time_str);
   UART_send_string_P(STORAGE_csv_header);
 
   for (uint32_t i = 0; i < STORAGE_current_location; i++) {
@@ -343,7 +362,7 @@ void STORAGE_dump_datapoints_to_uart() {
     UART_send_float(datapoint.humidity, 4, 1);
     UART_send_char('\t');
     UART_send_char(';');
-    UART_send_float(datapoint.co2concentration, 4, 1);
+    UART_send_float(datapoint.co2concentration, 4, 0);
     UART_send_char('\r');
     UART_send_char('\n');
   }

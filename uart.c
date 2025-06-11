@@ -4,8 +4,8 @@ char uart_string_buffer[UART_STRING_BUFFER_SIZE];
 
 void UART_init() {
   // UART baud rate
-  UBRR0H = (uint8_t)(temp_UBRR >> 8); // baud rate upper byte
-  UBRR0L = (uint8_t)temp_UBRR;        // baud rate lower byte
+  UBRR0H = (uint8_t)(UART_UBRR >> 8); // baud rate upper byte
+  UBRR0L = (uint8_t)UART_UBRR;        // baud rate lower byte
 
   // enable RX and TX
   UCSR0B = (0 << RXCIE0) | (0 << TXCIE0) | (0 << UDRIE0) | (1 << RXEN0) | (1 << TXEN0);
@@ -52,6 +52,11 @@ void UART_send_number(int16_t n) {
 void UART_send_number_hex(uint16_t n) {
   utoa(n, uart_string_buffer, 16);
   UART_send_string("0x");
+  UART_send_string(uart_string_buffer);
+}
+
+void UART_send_number_hex_32(uint32_t n) {
+  snprintf(uart_string_buffer, UART_STRING_BUFFER_SIZE, "0x%08lx", n);
   UART_send_string(uart_string_buffer);
 }
 
