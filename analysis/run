@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+if [ ! -d out/ ]; then
+    mkdir -v out
+    echo "*" > out/.gitignore
+fi
+
+julia analysis.jl "$1" -t auto
